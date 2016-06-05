@@ -1,0 +1,52 @@
+---
+- name: Install development packages to compile Python versions (RedHat)
+  yum:
+      pkg: "{{ item }}"
+      state: present
+  with_items:
+      - gcc
+      - patch
+      - sqlite-devel
+      - readline-devel
+      - openssl-devel
+      - bzip2-devel
+      - git
+  become: yes
+  when: ansible_distribution in ('CentOS', 'RedHat')
+- name: Install development packages to compile Python versions (Fedora)
+  dnf:
+      pkg: "{{ item }}"
+      state: present
+  with_items:
+      - gcc
+      - patch
+      - sqlite-devel
+      - readline-devel
+      - openssl-devel
+      - bzip2-devel
+      - git
+  become: yes
+  when: "'Fedora' in ansible_distribution"
+- name: Install development packages to compile Python versions (Arch)
+  package: name={{item}} state=present
+  with_items:
+    - openssl
+    - gcc
+    - patch
+    - sqlite
+    - readline
+    - bzip2
+    - git
+  when: "'Archlinux' in ansible_distribution"
+  become: yes
+- name: Install development packages to compile Python versions (Debian)
+  package: name={{item}} state=present update_cache=yes
+  with_items:
+    - gcc
+    - patch
+    - libsqlite3-dev
+    - libreadline-dev
+    - libbz2-dev
+    - libssl-dev
+    - git
+  when: ansible_distribution in ('Ubuntu', 'Debian')

@@ -1,0 +1,16 @@
+---
+- name: Check if pyenv is installed in pyenv_root
+  stat: path="{{ pyenv_user }}/bin/pyenv"
+  register: pyenv
+  become: yes
+  become_user: "{{ pyenv_user }}"
+
+- name: Run pyenv installer
+  command: >-
+    /tmp/pyenv-installer
+    creates: "{{ pyenv_root }}/bin/pyenv"
+  environment:
+    PYENV_ROOT: "{{ pyenv_root }}"
+  become: yes
+  become_user: "{{ pyenv_user }}"
+  when: not pyenv.stat.exists
