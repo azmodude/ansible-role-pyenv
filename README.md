@@ -1,5 +1,5 @@
-pyenv
-=====
+ansible-role-pyenv
+==================
 
 Install [pyenv](https://github.com/yyuu/pyenv) using [pyenv-installer](https://github.com/yyuu/pyenv-installer).
 
