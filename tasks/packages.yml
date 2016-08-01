@@ -50,3 +50,4 @@
     - libssl-dev
     - git
   when: ansible_distribution in ('Ubuntu', 'Debian')
+  become: yes

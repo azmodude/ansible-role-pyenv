@@ -15,7 +15,7 @@ Available variables are listed below, along with default values (see defaults/ma
 
     pyenv_user: "{{ ansible_env.USER }}"
 
-Install pyenv for given user.
+Install pyenv for given user. Make sure you don't `become: yes` to root user in your play when trying to install for a regular user.
 
     pyenv_root: "{{ ansible_env.HOME }}/.pyenv"
 
@@ -34,7 +34,7 @@ Example Playbook
       vars_files:
         - vars/main.yml
       roles:
-         - { role: azmodude.pyenv }
+         - { role: azmodude.pyenv, become: no }
 
 License
 -------
