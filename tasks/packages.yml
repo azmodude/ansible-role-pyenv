@@ -10,6 +10,7 @@
       - readline-devel
       - openssl-devel
       - bzip2-devel
+      - gdbm-devel
       - git
   become: yes
   when: ansible_distribution in ('CentOS', 'RedHat')
@@ -24,6 +25,7 @@
       - readline-devel
       - openssl-devel
       - bzip2-devel
+      - gdbm-devel
       - git
   become: yes
   when: "'Fedora' in ansible_distribution"
@@ -36,6 +38,7 @@
     - sqlite
     - readline
     - bzip2
+    - gdbm
     - git
   when: "'Archlinux' in ansible_distribution"
   become: yes
@@ -48,6 +51,7 @@
     - libreadline-dev
     - libbz2-dev
     - libssl-dev
+    - libgdbm-devel
     - git
-  when: ansible_distribution in ('Ubuntu', 'Debian')
+  when: "'Debian' in ansible_os_family"
   become: yes
