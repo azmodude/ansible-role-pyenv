@@ -51,7 +51,7 @@
     - libreadline-dev
     - libbz2-dev
     - libssl-dev
-    - libgdbm-devel
+    - libgdbm-dev
     - git
   when: "'Debian' in ansible_os_family"
   become: yes
