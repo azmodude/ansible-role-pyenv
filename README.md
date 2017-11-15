@@ -1,6 +1,8 @@
 ansible-role-pyenv
 ==================
 
+[![Build Status](https://travis-ci.org/azmodude/ansible-role-pyenv.svg?branch=master)](https://travis-ci.org/azmodude/ansible-role-pyenv)
+
 Install [pyenv](https://github.com/yyuu/pyenv) using [pyenv-installer](https://github.com/yyuu/pyenv-installer).
 
 Requirements
