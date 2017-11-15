@@ -10,6 +10,6 @@ before_install:
 install:
   - pip install molecule ansible>=2.4.0 docker-py
 script:
-  - molecule test
+  - travis_wait 30 molecule test
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

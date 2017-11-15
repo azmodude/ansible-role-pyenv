@@ -5,7 +5,7 @@ import testinfra.utils.ansible_runner
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
-PYTHON_VERSION = "3.6.3"
+python_version = os.environ['PYTHON_VERSION']
 
 
 def get_ansible_pyenv_users(host):
@@ -55,8 +55,23 @@ def test_pyenv_compiles(host):
     pyenv_location = get_pyenv_root(host, user)
 
     command = 'PYENV_ROOT={0} {0}/bin/pyenv install {1}'.\
-        format(pyenv_location, PYTHON_VERSION)
+        format(pyenv_location, python_version)
     with host.sudo(user['name']):
         commandoutput = host.run(command)
-    assert 'Installed Python-{0}'.format(PYTHON_VERSION) in \
-        commandoutput.stderr
+        assert 'Installed Python-{0}'.format(python_version) in \
+            commandoutput.stderr
+
+
+def test_pyenv_compiled_python(host):
+    """ Test whether compiled PYTHON_VERSION acutally works. """
+    try:
+        user = get_ansible_pyenv_users(host)[0]
+    except IndexError:
+        # No-users-defined testcase, return
+        return
+    pyenv_location = get_pyenv_root(host, user)
+    command = '{0}/versions/{1}/bin/python --version'.format(
+        pyenv_location, python_version)
+    with host.sudo(user['name']):
+        commandoutput = host.run(command)
+        assert python_version in commandoutput.stdout
