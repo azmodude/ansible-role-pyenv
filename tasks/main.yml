@@ -1,34 +1,29 @@
 ---
-- name: Check if pyenv is installed in pyenv_root
-  stat: path="{{ pyenv_root }}/bin/pyenv"
-  register: pyenv
-  become: yes
-  become_user: "{{ pyenv_user }}"
+- name: Get pyenv_users' home directories
+  block:
+    - name: Get user information from passwd getent database
+      getent:
+        database: passwd
+    - name: Set fact from home directories
+      set_fact:
+        home_directories: "{{ home_directories|default({}) | combine( { item.name: getent_passwd[item.name][4] } ) }}"
+      with_items: "{{ pyenv_users }}"
+  rescue:
+    - name: Fail when one or more users are missing
+      fail:
+        msg: "Failed getting home directory for one or more user(s) in pyenv_users"
 
-- block:
-  - include: packages.yml
-  # http://hakunin.com/six-ansible-practices
-  - name: Ensure github.com is a known host
-    lineinfile:
-      dest: "~/.ssh/known_hosts"
-      create: yes
-      state: present
-      line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
-      regexp: "^github\\.com"
-  - name: Download pyenv installer
-    get_url: >
-        url=https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer
-        dest=/tmp/pyenv-installer
-        mode=0700
-        sha256sum={{pyenv_installer_sha256}}
-  - name: Run pyenv installer
-    command: >-
-      /tmp/pyenv-installer
-      creates: "{{ pyenv_root }}/bin/pyenv"
-    environment:
-      PYENV_ROOT: "{{ pyenv_root }}"
-    become: yes
-    become_user: "{{ pyenv_user }}"
-  - name: Remove pyenv installer
-    file: path=/tmp/pyenv-installer state=absent
-  when: not pyenv.stat.exists
+- name: Check if pyenv is installed in pyenv_root
+  stat: path="{{ home_directories[item.name] }}/{{ item.root | default(pyenv_root) }}/bin/pyenv"
+  register: pyenv_installed
+  become: yes
+  become_user: "{{ item.name }}"
+  with_items: "{{ pyenv_users }}"
+
+- include_tasks: packages.yml
+
+- include_tasks: install.yml
+  with_items: "{{ pyenv_installed.results }}"
+  when: not pyenv_user.stat.exists
+  loop_control:
+    loop_var: pyenv_user

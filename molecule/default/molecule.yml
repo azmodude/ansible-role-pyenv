@@ -1,0 +1,57 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: ubuntu_xenial
+    image: ubuntu
+    image_version: 16.04
+  - name: ubuntu_artful
+    image: ubuntu
+    image_version: 17.10
+  - name: centos_7
+    image: centos
+    image_version: 7
+  - name: fedora_26
+    image: fedora
+    image_version: 26
+  - name: opensuse_leap
+    image: opensuse
+    image_version: leap
+
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  playbooks:
+    prepare: prepare.yml
+  inventory:
+    host_vars:
+      archlinux:
+        ansible_python_interpreter: /usr/bin/python2
+    group_vars:
+      all:
+        users_groups:
+          - name: users
+        users:
+          - name: molecule1
+            group: users
+          - name: molecule2
+            group: users
+          - name: molecule3
+            group: users
+        pyenv_users:
+          - name: molecule1
+            root: .pyenv
+          - name: molecule2
+            root: .pyenv_alternate
+          - name: molecule3
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

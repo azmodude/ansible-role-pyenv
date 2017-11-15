@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: False
+  tasks:
+    - name: Create user(s) for testing
+      include_role:
+        name: azmodude.users

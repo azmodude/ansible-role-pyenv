@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Gordon Schulz
   description: pyenv Python installer/version manager
@@ -7,23 +8,22 @@ galaxy_info:
   min_ansible_version: 2.0
 
   platforms:
-  - name: EL
-    versions:
-      - all
-  - name: Fedora
-    versions:
-      - all
-  - name: Ubuntu
-    versions:
-      - all
-  - name: Debian
-    versions:
-      - all
-  - name: Archlinux
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
 
   galaxy_tags:
-      - development
-      - python
-      - installer
+    - development
+    - python
+    - installer
 
 dependencies: []

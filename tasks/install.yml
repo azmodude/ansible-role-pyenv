@@ -1,0 +1,29 @@
+---
+- name: Install pyenv
+  block:
+    - name: Create temporary file to hold download
+      tempfile:
+        state: file
+        suffix: pyenv
+      register: pyenv_filename
+    - name: Download pyenv installer
+      get_url:
+        url: https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer
+        dest: "{{ pyenv_filename.path }}"
+        mode: 0700
+        sha256sum: "{{ pyenv_installer_sha256 }}"
+    - name: Set user pyenv destination as fact
+      set_fact:
+        pyenv_root_user: "{{ home_directories[pyenv_user.item.name] + '/' + pyenv_user.item.root | default(pyenv_root) }}"
+    - name: Run pyenv installer
+      command: >-
+        "{{ pyenv_filename.path }}"
+        creates: "{{ pyenv_root_user }}/bin/pyenv"
+      environment:
+        PYENV_ROOT: "{{ pyenv_root_user }}"
+    - name: Remove pyenv installer
+      file:
+        path: "{{ pyenv_filename.path }}"
+        state: absent
+  become: yes
+  become_user: "{{ pyenv_user.item.name }}"

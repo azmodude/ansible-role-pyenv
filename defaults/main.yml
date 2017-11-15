@@ -1,3 +1,2 @@
 ---
-pyenv_user: "{{ ansible_env.USER }}"
-pyenv_root: "{{ ansible_env.HOME }}/.pyenv"
+pyenv_root: '.pyenv'

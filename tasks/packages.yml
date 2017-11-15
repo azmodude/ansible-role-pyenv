@@ -1,57 +1,65 @@
 ---
-- name: Install development packages to compile Python versions (RedHat)
-  yum:
-      pkg: "{{ item }}"
-      state: present
-  with_items:
-      - gcc
-      - patch
-      - sqlite-devel
-      - readline-devel
-      - openssl-devel
-      - bzip2-devel
-      - gdbm-devel
+- name: Set common packages as fact
+  set_fact:
+    common:
       - git
-  become: yes
-  when: ansible_distribution in ('CentOS', 'RedHat')
-- name: Install development packages to compile Python versions (Fedora)
-  dnf:
-      pkg: "{{ item }}"
-      state: present
-  with_items:
-      - gcc
-      - patch
-      - sqlite-devel
-      - readline-devel
-      - openssl-devel
-      - bzip2-devel
-      - gdbm-devel
-      - git
-  become: yes
-  when: "'Fedora' in ansible_distribution"
-- name: Install development packages to compile Python versions (Arch)
-  package: name={{item}} state=present
-  with_items:
-    - openssl
-    - gcc
-    - patch
-    - sqlite
-    - readline
-    - bzip2
-    - gdbm
-    - git
-  when: "'Archlinux' in ansible_distribution"
-  become: yes
-- name: Install development packages to compile Python versions (Debian)
-  package: name={{item}} state=present update_cache=yes
-  with_items:
-    - gcc
-    - patch
-    - libsqlite3-dev
-    - libreadline-dev
-    - libbz2-dev
-    - libssl-dev
-    - libgdbm-dev
-    - git
-  when: "'Debian' in ansible_os_family"
+      - curl
+      - tar
+      - make
+      - findutils
+
+- name: Install development packages to compile Python versions
+  block:
+    - name: Install development packages to compile Python versions (RedHat)
+      yum:
+        name: "{{ item }}"
+      with_items:
+        - gcc
+        - patch
+        - sqlite-devel
+        - readline-devel
+        - openssl-devel
+        - bzip2-devel
+        - gdbm-devel
+        - "{{ common }}"
+      when: ansible_distribution in ('CentOS', 'RedHat')
+    - name: Install development packages to compile Python versions (Fedora)
+      dnf:
+        name: "{{ item }}"
+      with_items:
+        - gcc
+        - patch
+        - sqlite-devel
+        - readline-devel
+        - openssl-devel
+        - bzip2-devel
+        - gdbm-devel
+        - "{{ common }}"
+      when: "'Fedora' in ansible_distribution"
+    - name: Install development packages to compile Python versions (Debian)
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - gcc
+        - patch
+        - libsqlite3-dev
+        - libreadline-dev
+        - libbz2-dev
+        - libssl-dev
+        - libgdbm-dev
+        - "{{ common }}"
+      when: "'Debian' in ansible_os_family"
+    - name: Install development packages to compile Python versions (SuSE)
+      zypper:
+        name: "{{ item }}"
+      with_items:
+        - gcc
+        - patch
+        - sqlite3-devel
+        - readline-devel
+        - libbz2-devel
+        - libopenssl-devel
+        - gdbm-devel
+        - "{{ common }}"
+      when: "'Suse' in ansible_os_family"
   become: yes
