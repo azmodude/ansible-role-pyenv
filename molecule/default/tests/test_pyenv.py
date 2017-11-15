@@ -10,7 +10,11 @@ PYTHON_VERSION = "3.6.3"
 
 def get_ansible_pyenv_users(host):
     """ Get pyenv_users variable from Ansible. """
-    return host.ansible.get_variables()['pyenv_users']
+    try:
+        return host.ansible.get_variables()['pyenv_users']
+    except KeyError:
+        # No-users-defined testcase, return
+        return []
 
 
 def get_pyenv_root(host, user):
@@ -32,18 +36,22 @@ def test_pyenv_isinstalled(host):
 
 def test_pyenv_executes(host):
     """ Test whether pyenv outputs its version. """
-    user = get_ansible_pyenv_users(host)[0]
-    pyenv_location = get_pyenv_root(host, user)
+    for user in get_ansible_pyenv_users(host):
+        pyenv_root = get_pyenv_root(host, user)
 
-    command = 'PYENV_ROOT={0} {0}/bin/pyenv --version'.format(pyenv_location)
-    with host.sudo(user['name']):
-        commandoutput = host.run(command)
-    assert commandoutput.stdout.startswith('pyenv')
+        command = 'PYENV_ROOT={0} {0}/bin/pyenv --version'.format(pyenv_root)
+        with host.sudo(user['name']):
+            commandoutput = host.run(command)
+            assert commandoutput.stdout.startswith('pyenv')
 
 
 def test_pyenv_compiles(host):
     """ Test whether pyenv is able to compile PYTHON_VERSION. """
-    user = get_ansible_pyenv_users(host)[0]
+    try:
+        user = get_ansible_pyenv_users(host)[0]
+    except IndexError:
+        # No-users-defined testcase, return
+        return
     pyenv_location = get_pyenv_root(host, user)
 
     command = 'PYENV_ROOT={0} {0}/bin/pyenv install {1}'.\
