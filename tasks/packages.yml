@@ -8,9 +8,9 @@
       - make
       - findutils
 
-- name: Install development packages to compile Python versions
+- name: Install packages to compile Python versions
   block:
-    - name: Install development packages to compile Python versions (RedHat)
+    - name: Install packages to compile Python versions (RedHat)
       yum:
         name: "{{ item }}"
       with_items:
@@ -23,7 +23,7 @@
         - gdbm-devel
         - "{{ common }}"
       when: ansible_distribution in ('CentOS', 'RedHat')
-    - name: Install development packages to compile Python versions (Fedora)
+    - name: Install packages to compile Python versions (Fedora)
       dnf:
         name: "{{ item }}"
       with_items:
@@ -36,7 +36,7 @@
         - gdbm-devel
         - "{{ common }}"
       when: "'Fedora' in ansible_distribution"
-    - name: Install development packages to compile Python versions (Debian)
+    - name: Install packages to compile Python versions (Debian)
       apt:
         name: "{{ item }}"
       with_items:
@@ -49,7 +49,7 @@
         - libgdbm-dev
         - "{{ common }}"
       when: "'Debian' in ansible_os_family"
-    - name: Install development packages to compile Python versions (SuSE)
+    - name: Install packages to compile Python versions (SuSE)
       zypper:
         name: "{{ item }}"
       with_items:
