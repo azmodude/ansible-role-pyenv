@@ -1,29 +1,32 @@
 ---
-- name: Get pyenv_users' home directories
+- name: Execute tasks when pyenv_users is actually defined
   block:
-    - name: Get user information from passwd getent database
-      getent:
-        database: passwd
-    - name: Set fact from home directories
-      set_fact:
-        home_directories: "{{ home_directories|default({}) | combine( { item.name: getent_passwd[item.name][4] } ) }}"
+    - name: Get pyenv_users' home directories
+      block:
+        - name: Get user information from passwd getent database
+          getent:
+            database: passwd
+        - name: Set fact from home directories
+          set_fact:
+            home_directories: "{{ home_directories|default({}) | combine( { item.name: getent_passwd[item.name][4] } ) }}"
+          with_items: "{{ pyenv_users }}"
+      rescue:
+        - name: Fail when one or more users are missing
+          fail:
+            msg: "Failed getting home directory for one or more user(s) in pyenv_users"
+
+    - name: Check if pyenv is installed in pyenv_root
+      stat: path="{{ home_directories[item.name] }}/{{ item.root | default(pyenv_root) }}/bin/pyenv"
+      register: pyenv_installed
+      become: yes
+      become_user: "{{ item.name }}"
       with_items: "{{ pyenv_users }}"
-  rescue:
-    - name: Fail when one or more users are missing
-      fail:
-        msg: "Failed getting home directory for one or more user(s) in pyenv_users"
 
-- name: Check if pyenv is installed in pyenv_root
-  stat: path="{{ home_directories[item.name] }}/{{ item.root | default(pyenv_root) }}/bin/pyenv"
-  register: pyenv_installed
-  become: yes
-  become_user: "{{ item.name }}"
-  with_items: "{{ pyenv_users }}"
+    - include_tasks: packages.yml
 
-- include_tasks: packages.yml
-
-- include_tasks: install.yml
-  with_items: "{{ pyenv_installed.results }}"
-  when: not pyenv_user.stat.exists
-  loop_control:
-    loop_var: pyenv_user
+    - include_tasks: install.yml
+      with_items: "{{ pyenv_installed.results }}"
+      when: not pyenv_user.stat.exists
+      loop_control:
+        loop_var: pyenv_user
+  when: pyenv_users is defined
