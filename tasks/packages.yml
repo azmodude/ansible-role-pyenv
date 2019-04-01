@@ -8,58 +8,49 @@
       - make
       - findutils
 
+- name: Set distribtion specific packages as fact
+  set_fact:
+    redhat:
+      - gcc
+      - patch
+      - sqlite-devel
+      - readline-devel
+      - openssl-devel
+      - bzip2-devel
+      - gdbm-devel
+    debian:
+      - gcc
+      - patch
+      - libsqlite3-dev
+      - libreadline-dev
+      - libbz2-dev
+      - libssl-dev
+      - libgdbm-dev
+    suse:
+      - gcc
+      - patch
+      - sqlite3-devel
+      - readline-devel
+      - libbz2-devel
+      - libopenssl-devel
+      - gdbm-devel
+
 - name: Install packages to compile Python versions
   block:
     - name: Install packages to compile Python versions (RedHat)
       yum:
-        name: "{{ item }}"
-      with_items:
-        - gcc
-        - patch
-        - sqlite-devel
-        - readline-devel
-        - openssl-devel
-        - bzip2-devel
-        - gdbm-devel
-        - "{{ common }}"
+        name: "{{ common }} + {{ redhat }}"
       when: ansible_distribution in ('CentOS', 'RedHat')
     - name: Install packages to compile Python versions (Fedora)
       dnf:
-        name: "{{ item }}"
-      with_items:
-        - gcc
-        - patch
-        - sqlite-devel
-        - readline-devel
-        - openssl-devel
-        - bzip2-devel
-        - gdbm-devel
-        - "{{ common }}"
+        name: "{{ common }} + {{ redhat }}"
       when: "'Fedora' in ansible_distribution"
     - name: Install packages to compile Python versions (Debian)
       apt:
-        name: "{{ item }}"
-      with_items:
-        - gcc
-        - patch
-        - libsqlite3-dev
-        - libreadline-dev
-        - libbz2-dev
-        - libssl-dev
-        - libgdbm-dev
-        - "{{ common }}"
+        name: "{{ common }} + {{ debian }}"
       when: "'Debian' in ansible_os_family"
     - name: Install packages to compile Python versions (SuSE)
       zypper:
-        name: "{{ item }}"
-      with_items:
-        - gcc
-        - patch
-        - sqlite3-devel
-        - readline-devel
-        - libbz2-devel
-        - libopenssl-devel
-        - gdbm-devel
-        - "{{ common }}"
+        name: "{{ common }} + {{ suse }}"
       when: "'Suse' in ansible_os_family"
   become: yes
