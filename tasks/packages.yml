@@ -26,6 +26,7 @@
       - libbz2-dev
       - libssl-dev
       - libgdbm-dev
+      - zlib1g-dev
     suse:
       - gcc
       - patch
