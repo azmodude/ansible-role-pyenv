@@ -21,6 +21,7 @@
     debian:
       - gcc
       - patch
+      - libffi-dev
       - libsqlite3-dev
       - libreadline-dev
       - libbz2-dev
